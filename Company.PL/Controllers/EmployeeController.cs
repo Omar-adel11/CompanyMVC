@@ -1,0 +1,154 @@
+﻿using Company.BLL.Interfaces;
+using Company.DAL.Models;
+using Company.PL.DTO;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Company.PL.Controllers
+{
+    public class EmployeeController : Controller
+    {
+        private readonly IEmployeeRepo _employeeRepo;
+        // ask CLR to create object from DepartmentRepo class
+
+        public EmployeeController(IEmployeeRepo employeeRepo)
+        {
+            _employeeRepo = employeeRepo;
+        }
+
+        [HttpGet]
+        public IActionResult Index()
+        {
+
+            var employees = _employeeRepo.GetAll();
+
+            return View(employees);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create()
+        {
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Create(CreateDTOEmployee model)
+        {
+            if (ModelState.IsValid) //server-side validation
+            {
+                var employee = new Employee()
+                {
+                    Name = model.Name,
+                    Email = model.Email,
+                    Age = model.Age,
+                    Address = model.Address,
+                    Phone = model.Phone,
+                    Salary = model.Salary,
+                    HireDate = model.HireDate,
+                    CreateAt = model.CreateAt,
+                    IsActive = model.IsActive,
+                    IsDeleted = model.IsDeleted
+                        
+                };
+
+                var count = _employeeRepo.Add(employee);
+
+                if (count > 0)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult Details(int? id, string ViewName = "Details")
+        {
+            if (id is null)
+                return BadRequest("Invalid Id");
+            var model = _employeeRepo.Get(id.Value);
+
+            if (model is null)
+                return NotFound(new { StatusCode = 404, Message = $"Employee with Id {id} is Not Found" });
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int? id)
+        {
+            if (id is null)
+                return BadRequest("Invalid Id");
+
+            var employee = _employeeRepo.Get(id.Value);
+
+            if (employee is null)
+                return NotFound();
+
+            var dto = new CreateDTOEmployee
+            {
+                Name = employee.Name,
+                Email = employee.Email,
+                Age = employee.Age,
+                Address = employee.Address,
+                Phone = employee.Phone,
+                Salary = employee.Salary,
+                HireDate = employee.HireDate,
+                CreateAt = employee.CreateAt,
+                IsActive = employee.IsActive,
+                IsDeleted = employee.IsDeleted
+            };
+
+            return View(dto);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken] // to prevent CSRF attacks OR ANY Request other than form submission (used with post)
+        public IActionResult Edit([FromRoute] int id, CreateDTOEmployee _employeeDTO)
+        {
+
+            if (ModelState.IsValid) //server-side validation
+            {
+                var employee = new Employee()
+                {
+                    Id = id,
+                    Name = _employeeDTO.Name,
+                    Email = _employeeDTO.Email,
+                    Age = _employeeDTO.Age,
+                    Address = _employeeDTO.Address,
+                    Phone = _employeeDTO.Phone,
+                    Salary = _employeeDTO.Salary,
+                    HireDate = _employeeDTO.HireDate,
+                    CreateAt = _employeeDTO.CreateAt,
+                    IsActive = _employeeDTO.IsActive,
+                    IsDeleted = _employeeDTO.IsDeleted
+
+                };
+
+                int count = _employeeRepo.Update(employee);
+
+                if (count > 0)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            
+            return View(_employeeDTO);
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int? id)
+        {
+            if (id is null)
+                return BadRequest("Invalid Id");
+
+            var model = _employeeRepo.Get(id.Value);
+            if (model is null)
+                return NotFound(new { StatusCode = 404, Message = $"Employee with Id {id} is Not Found" });
+            int value = _employeeRepo.Delete(model);
+
+            return RedirectToAction(nameof(Index));
+        }
+    }
+}

@@ -1,0 +1,26 @@
+﻿@model CreateDTODepartment
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+
+
+<br/>
+<br/>
+
+
+<form asp-action="Edit" >
+    
+   <div class="my-3">
+       <input type="submit" value="Apply" class="btn btn-warning" />
+       <a asp-action="Index" class="btn btn-light">Back-to list</a>
+   </div>
+</form>
+
+@section validation {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

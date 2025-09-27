@@ -1,0 +1,55 @@
+using Company.BLL.Interfaces;
+using Company.BLL.Repos;
+using Company.DAL.Data.Contexts;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+
+namespace Company.PL
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
+
+            // Add services to the container.
+            builder.Services.AddControllersWithViews();
+
+            builder.Services.AddScoped<IDepartmentRepo,DepartmentRepo>(); //allow dependency injection for DepartmentRepo
+            builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();//allow dependency injection for EmployeeRepo
+
+            //builder.Services.AddTransient<DepartmentRepo>();
+            //builder.Services.AddSingleton<DepartmentRepo>();
+
+            builder.Services.AddDbContext<CompanyDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+            });//allow dependency injection for CompanyDbContext
+
+         
+            var app = builder.Build();
+
+            // Configure the HTTP request pipeline.
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.Run();
+        }
+    }
+}

@@ -1,0 +1,66 @@
+﻿
+@model IEnumerable<Employee>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>All Employees</h1>
+
+<br />
+<br/>
+
+<a  asp asp-action="Create" asp-controller ="Employee" class="btn btn-primary">Create Employee</a>
+
+    <br/>
+    <br/>
+
+@if(Model.Count() > 0 )
+{
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Salary</th>
+                <th>Email</th>
+                <th>Is Active</th>
+                <th>Is Deleted</th>
+                <th>Hiring Date</th>
+                <th>Date of creation</th>
+				<th>Details</th>
+                <th>Update</th>
+				<th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var item in Model)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Age</td>
+                    <td>@item.Phone</td>
+                    <td>@item.Address</td>
+                    <td>@item.Salary</td>
+                    <td>@item.Email</td>
+                    <td>@item.IsActive</td>
+                    <td>@item.IsDeleted</td>
+					<td>@item."@Html.DisplayNameFor(E=>E.HireDate)"</td>
+                    <td>@item.@Html.DisplayNameFor(E => E.CreateAt)</td>
+                    <partial name="_ButtonPartialView" model="@item.Id" />
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+}else
+{
+    <div class="m4 alert alert-info">
+        <h4>There are no Employees</h4>
+    </div>
+}
+
+

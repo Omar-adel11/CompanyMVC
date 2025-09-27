@@ -1,0 +1,38 @@
+﻿@model Department
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<table class="table table-hover table-striped">
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Created At</th>
+            <th>Details</th>
+            <th>Update</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+       
+            <tr>
+                <td>@Model.Code</td>
+                <td>@Model.Name</td>
+                <td>@Model.CreateAt</td>
+                <td>
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-success">Update</a>
+                </td>
+                <td>
+                <a asp-action="Delete" asp-route-id="@Model.Id"  class="btn btn-danger">Delete</a>
+                </td>
+                <td>
+                    <a asp-action="Index" class="btn btn-light">Back to list</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

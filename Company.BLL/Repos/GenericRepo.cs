@@ -1,0 +1,49 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Company.BLL.Interfaces;
+using Company.DAL.Data.Contexts;
+using Company.DAL.Models;
+
+namespace Company.BLL.Repos
+{
+    public class GenericRepo<T> : IGenericRepo<T> where T : BaseEntity
+    {
+        private readonly CompanyDbContext _context;
+        public GenericRepo(CompanyDbContext context)
+        {
+            _context = context;
+        }
+
+        public IEnumerable<T> GetAll()
+        {
+            var result = _context.Set<T>().ToList();
+            return result;
+        }
+
+        public T? Get(int id)
+        {
+            return _context.Set<T>().Find(id);
+        }
+
+        public int Add(T model)
+        {
+            _context.Set<T>().Add(model);
+            return _context.SaveChanges();
+        }
+
+        public int Delete(T model)
+        {
+            _context.Set<T>().Remove(model);
+            return _context.SaveChanges();
+        }
+
+        public int Update(T model)
+        {
+            _context.Set<T>().Update(model);
+            return _context.SaveChanges();
+        }
+    }
+}
