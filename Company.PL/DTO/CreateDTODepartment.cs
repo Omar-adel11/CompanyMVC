@@ -10,5 +10,7 @@ namespace Company.PL.DTO
         public string Name { get; set; }
         [Required(ErrorMessage = "Created At is required")]
         public DateTime CreateAt { get; set; }
+
+        
     }
 }

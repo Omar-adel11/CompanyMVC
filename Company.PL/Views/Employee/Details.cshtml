@@ -19,6 +19,7 @@
                 <th>Is Deleted</th>
                 <th>Hiring Date</th>
                 <th>Date of creation</th>
+                <th>Department</th>
                 <th>Details</th>
                 <th>Update</th>
                 <th>Delete</th>
@@ -35,8 +36,9 @@
                 <td>@Model.Email</td>
                 <td>@Model.IsActive</td>
                 <td>@Model.IsDeleted</td>
-                <td>@Model."@Html.DisplayNameFor(E => E.HireDate)"</td>
-                <td>@Model.@Html.DisplayNameFor(E => E.CreateAt)</td>
+                <td>@Model.HireDate</td>
+                <td>@Model.CreateAt</td>
+                <td>@Model.Department?.Name</td>
                     <td>
                     <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-warning">Details</a>
                     </td>

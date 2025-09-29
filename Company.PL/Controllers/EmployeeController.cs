@@ -1,4 +1,5 @@
 ﻿using Company.BLL.Interfaces;
+using Company.BLL.Repos;
 using Company.DAL.Models;
 using Company.PL.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -8,31 +9,52 @@ namespace Company.PL.Controllers
     public class EmployeeController : Controller
     {
         private readonly IEmployeeRepo _employeeRepo;
+        private readonly IDepartmentRepo _departmentRepo;
+
         // ask CLR to create object from DepartmentRepo class
 
-        public EmployeeController(IEmployeeRepo employeeRepo)
+        public EmployeeController(IEmployeeRepo employeeRepo,IDepartmentRepo departmentRepo)
         {
             _employeeRepo = employeeRepo;
+            _departmentRepo = departmentRepo;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-
+            
             var employees = _employeeRepo.GetAll();
+
+            ////Dictionary : Key : Value
+            ////3 properties to acces data of controller in the view 
+            ////             to transfer extra information from controller to view
+            ////those properties are inherited from controller base class
+            ////1.ViewData : ViewData["Key"] = value; //object
+
+            //ViewData["Message01"] = "Hello from ViewData";
+
+            ////2.ViewBag : ViewBag.Key = value; //dynamic
+            ////doesnt not need casting
+            //ViewBag.Message02 = "Hello from ViewBag";
+
+            ////3.TempData : TempData["Key"] = value; //object : keep data between 2 requests
+            //// to access data after redirection
+            
 
             return View(employees);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpGet]
         public IActionResult Create()
         {
+            var departments = _departmentRepo.GetAll();
+            ViewData["Departments"] = departments;
 
             return View();
         }
 
-        [HttpGet]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(CreateDTOEmployee model)
         {
             if (ModelState.IsValid) //server-side validation
@@ -48,14 +70,17 @@ namespace Company.PL.Controllers
                     HireDate = model.HireDate,
                     CreateAt = model.CreateAt,
                     IsActive = model.IsActive,
-                    IsDeleted = model.IsDeleted
-                        
+                    IsDeleted = model.IsDeleted,
+                    DepartmentId = model.DepartmentId
+                    
+
                 };
 
                 var count = _employeeRepo.Add(employee);
 
                 if (count > 0)
                 {
+                    //TempData["Message03"] = "Employee Created successfuly";
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -86,6 +111,9 @@ namespace Company.PL.Controllers
             if (employee is null)
                 return NotFound();
 
+            var depts = _departmentRepo.GetAll();
+            ViewData["Departments"] = depts;
+
             var dto = new CreateDTOEmployee
             {
                 Name = employee.Name,
@@ -97,7 +125,8 @@ namespace Company.PL.Controllers
                 HireDate = employee.HireDate,
                 CreateAt = employee.CreateAt,
                 IsActive = employee.IsActive,
-                IsDeleted = employee.IsDeleted
+                IsDeleted = employee.IsDeleted,
+                DepartmentId = employee.DepartmentId
             };
 
             return View(dto);
@@ -122,7 +151,8 @@ namespace Company.PL.Controllers
                     HireDate = _employeeDTO.HireDate,
                     CreateAt = _employeeDTO.CreateAt,
                     IsActive = _employeeDTO.IsActive,
-                    IsDeleted = _employeeDTO.IsDeleted
+                    IsDeleted = _employeeDTO.IsDeleted,
+                    DepartmentId = _employeeDTO.DepartmentId
 
                 };
 

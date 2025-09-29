@@ -19,5 +19,9 @@ namespace Company.DAL.Models
         public bool IsDeleted { get; set; }
         public DateTime HireDate { get; set; }
         public DateTime CreateAt { get; set; }
+
+        public int? DepartmentId { get; set; }
+        //Navigation property
+        public Department? Department { get; set; }
     }
 }

@@ -1,14 +1,38 @@
 ﻿
 @model IEnumerable<Employee>
 
+
+
 @{
     ViewData["Title"] = "Index";
+    
+    // string? ViewDatamssg = ViewData["Message01"] as string;
+    // string? ViewBagmssg = ViewBag.Message02;
+    // string? TempDataMssg = TempData["Message03"] as string; ;
 }
 
 <h1>All Employees</h1>
-
-<br />
 <br/>
+<br/>
+@* <div class="alert alert-info">
+    <p>@ViewDatamssg</p>
+</div>
+<br />
+
+<div class="alert alert-warning">
+    <p>ViewBagmssg </p>
+</div>
+<br /> *@
+@* @if(TempDataMssg != null)
+{
+    <div class="alert alert-success">
+        <p>@TempDataMssg</p>
+    </div>
+} *@
+
+
+<br/>
+<br />
 
 <a  asp asp-action="Create" asp-controller ="Employee" class="btn btn-primary">Create Employee</a>
 
@@ -30,6 +54,7 @@
                 <th>Is Deleted</th>
                 <th>Hiring Date</th>
                 <th>Date of creation</th>
+                <th>Department</th>
 				<th>Details</th>
                 <th>Update</th>
 				<th>Delete</th>
@@ -47,8 +72,9 @@
                     <td>@item.Email</td>
                     <td>@item.IsActive</td>
                     <td>@item.IsDeleted</td>
-					<td>@item."@Html.DisplayNameFor(E=>E.HireDate)"</td>
-                    <td>@item.@Html.DisplayNameFor(E => E.CreateAt)</td>
+					<td>@item.HireDate"</td>
+                    <td>@item.CreateAt</td>
+                    <td>@item.Department?.Name</td>
                     <partial name="_ButtonPartialView" model="@item.Id" />
                 </tr>
             }
