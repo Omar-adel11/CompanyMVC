@@ -1,8 +1,10 @@
 using Company.BLL.Interfaces;
 using Company.BLL.Repos;
 using Company.DAL.Data.Contexts;
+using Company.PL.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using IServiceScope = Company.PL.Services.IServiceScope;
 
 namespace Company.PL
 {
@@ -25,9 +27,18 @@ namespace Company.PL
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
-            });//allow dependency injection for CompanyDbContext
+            }, ServiceLifetime.Scoped);//allow dependency injection for CompanyDbContext
 
-         
+            //Life Time
+            //builder.Services.AddScoped();     //Create object life time per request (repo)
+            //builder.Services.AddTransient();  //Create object life time per operation (profile)
+            //builder.Services.AddSingleton();  //Create object life time per application (cache) 
+
+            builder.Services.AddScoped<IServiceScope, ServiceScope>();     //Create object life time per request 
+            builder.Services.AddTransient<IServiceTransient, ServiceTransient>();  //Create object life time per operation 
+            builder.Services.AddSingleton<ISeriveSingleton, SeriveSingleton>();  //Create object life time per application 
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
