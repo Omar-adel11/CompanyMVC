@@ -1,9 +1,11 @@
 using Company.BLL.Interfaces;
 using Company.BLL.Repos;
 using Company.DAL.Data.Contexts;
+using Company.PL.Mapper;
 using Company.PL.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+
 using IServiceScope = Company.PL.Services.IServiceScope;
 
 namespace Company.PL
@@ -38,6 +40,8 @@ namespace Company.PL
             builder.Services.AddTransient<IServiceTransient, ServiceTransient>();  //Create object life time per operation 
             builder.Services.AddSingleton<ISeriveSingleton, SeriveSingleton>();  //Create object life time per application 
 
+            //builder.Services.AddAutoMapper(typeof(EmployeeProfile)); //allow dependency injection for automapper
+            builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
 
             var app = builder.Build();
 
