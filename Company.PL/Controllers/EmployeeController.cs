@@ -3,6 +3,7 @@ using Company.BLL.Repos;
 using Company.DAL.Models;
 using Company.PL.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Company.PL.Controllers
 {
@@ -20,28 +21,37 @@ namespace Company.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string? searchInput)
         {
-            
-            var employees = _employeeRepo.GetAll();
+            IEnumerable<Employee> employees;
+            if (searchInput.IsNullOrEmpty())
+            {
+                 employees = _employeeRepo.GetAll();
+            }
+            else
+            {
+                 employees = _employeeRepo.GetByName(searchInput);
+            }
 
-            ////Dictionary : Key : Value
-            ////3 properties to acces data of controller in the view 
-            ////             to transfer extra information from controller to view
-            ////those properties are inherited from controller base class
-            ////1.ViewData : ViewData["Key"] = value; //object
 
-            //ViewData["Message01"] = "Hello from ViewData";
 
-            ////2.ViewBag : ViewBag.Key = value; //dynamic
-            ////doesnt not need casting
-            //ViewBag.Message02 = "Hello from ViewBag";
+                ////Dictionary : Key : Value
+                ////3 properties to acces data of controller in the view 
+                ////             to transfer extra information from controller to view
+                ////those properties are inherited from controller base class
+                ////1.ViewData : ViewData["Key"] = value; //object
 
-            ////3.TempData : TempData["Key"] = value; //object : keep data between 2 requests
-            //// to access data after redirection
-            
+                //ViewData["Message01"] = "Hello from ViewData";
 
-            return View(employees);
+                ////2.ViewBag : ViewBag.Key = value; //dynamic
+                ////doesnt not need casting
+                //ViewBag.Message02 = "Hello from ViewBag";
+
+                ////3.TempData : TempData["Key"] = value; //object : keep data between 2 requests
+                //// to access data after redirection
+
+
+                return View(employees);
         }
 
         [HttpGet]
