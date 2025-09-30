@@ -42,6 +42,7 @@ namespace Company.PL
 
             //builder.Services.AddAutoMapper(typeof(EmployeeProfile)); //allow dependency injection for automapper
             builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
+            builder.Services.AddAutoMapper(M => M.AddProfile(new DepartmentProfile()));
 
             var app = builder.Build();
 

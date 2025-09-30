@@ -1,4 +1,5 @@
-﻿using Company.BLL.Interfaces;
+﻿using AutoMapper;
+using Company.BLL.Interfaces;
 using Company.BLL.Repos;
 using Company.DAL.Models;
 using Company.PL.DTO;
@@ -10,11 +11,14 @@ namespace Company.PL.Controllers
     public class DepartmentController : Controller
     {
         private readonly IDepartmentRepo _departmentRepo;
+        private readonly IMapper _mapper;
+
         // ask CLR to create object from DepartmentRepo class
-       
-        public DepartmentController(IDepartmentRepo departmentRepo)
+
+        public DepartmentController(IDepartmentRepo departmentRepo, IMapper Mapper)
         {
             _departmentRepo =  departmentRepo;
+            _mapper = Mapper;
         }
 
         [HttpGet]
@@ -39,12 +43,14 @@ namespace Company.PL.Controllers
         {
             if(ModelState.IsValid) //server-side validation
             {
-                var department = new Department()
-                {
-                    Code = model.Code,
-                    Name = model.Name,
-                    CreateAt = model.CreateAt
-                };
+                //var department = new Department()
+                //{
+                //    Code = model.Code,
+                //    Name = model.Name,
+                //    CreateAt = model.CreateAt
+                //};
+                var department = _mapper.Map<Department>(model);
+
 
                 var count = _departmentRepo.Add(department);
 
@@ -78,12 +84,14 @@ namespace Company.PL.Controllers
 
             if (model is null)
                 return NotFound(new { StatusCode = 404, Message = $"Department with Id {id} is Not Found" });
-            var dto = new CreateDTODepartment()
-            {
-                Code = model.Code,
-                Name = model.Name,
-                CreateAt = model.CreateAt
-            };
+            //var dto = new CreateDTODepartment()
+            //{
+            //    Code = model.Code,
+            //    Name = model.Name,
+            //    CreateAt = model.CreateAt
+            //};
+
+            var dto = _mapper.Map<CreateDTODepartment>(model);
             return View(dto);
 
             //return Details(id, "Edit");
@@ -95,14 +103,15 @@ namespace Company.PL.Controllers
         {
             if (ModelState.IsValid)
             {
-                var department = new Department()
-                {
-                    Id = id,
-                    Code = _departmentDTO.Code,
-                    Name = _departmentDTO.Name,
-                    CreateAt = _departmentDTO.CreateAt
-                };
-
+                //var department = new Department()
+                //{
+                //    Id = id,
+                //    Code = _departmentDTO.Code,
+                //    Name = _departmentDTO.Name,
+                //    CreateAt = _departmentDTO.CreateAt
+                //};
+                var department = _mapper.Map<Department>(_departmentDTO);
+                department.Id = id;
                 int count = _departmentRepo.Update(department);
 
                 if(count > 0)
