@@ -3,6 +3,7 @@ using Company.BLL.Interfaces;
 using Company.BLL.Repos;
 using Company.DAL.Models;
 using Company.PL.DTO;
+using Company.PL.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -89,7 +90,11 @@ namespace Company.PL.Controllers
                     
 
                 //};
-
+                if(model.Image is not null)
+                {
+                    //upload file
+                     model.ImageName = DocumentSettings.UploadFile(model.Image, "images");
+                }
                 var employee = _mapper.Map<Employee>(model);
 
                 _unitOfWork.EmployeeRepo.Add(employee);
@@ -174,6 +179,15 @@ namespace Company.PL.Controllers
                 //    DepartmentId = _employeeDTO.DepartmentId
 
                 //};
+                if(_employeeDTO.Image is not null && _employeeDTO.ImageName is not null)
+                {
+                    DocumentSettings.DeleteFile(_employeeDTO.ImageName, "images");
+                }
+
+                if(_employeeDTO.Image is not null)
+                {
+                    _employeeDTO.ImageName = DocumentSettings.UploadFile(_employeeDTO.Image, "images");
+                }
 
                 var employee = _mapper.Map<Employee>(_employeeDTO);
                 employee.Id = id;   
@@ -198,6 +212,11 @@ namespace Company.PL.Controllers
             var model = _unitOfWork.EmployeeRepo.Get(id.Value);
             if (model is null)
                 return NotFound(new { StatusCode = 404, Message = $"Employee with Id {id} is Not Found" });
+            if (model.ImageName is not null)
+            {
+                DocumentSettings.DeleteFile(model.ImageName, "images");
+            }
+
             _unitOfWork.EmployeeRepo.Delete(model);
             var count = _unitOfWork.Save();
 

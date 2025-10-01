@@ -23,5 +23,7 @@ namespace Company.DAL.Models
         public int? DepartmentId { get; set; }
         //Navigation property
         public Department? Department { get; set; }
+
+        public string? ImageName { get; set; } 
     }
 }
