@@ -10,16 +10,16 @@ namespace Company.PL.Controllers
 {
     public class EmployeeController : Controller
     {
-        private readonly IEmployeeRepo _employeeRepo;
-        private readonly IDepartmentRepo _departmentRepo;
+        
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         // ask CLR to create object from DepartmentRepo class
 
-        public EmployeeController(IEmployeeRepo employeeRepo,IDepartmentRepo departmentRepo,IMapper Mapper)
+        public EmployeeController(IUnitOfWork unitOfWork, IMapper Mapper)
         {
-            _employeeRepo = employeeRepo;
-            _departmentRepo = departmentRepo;
+            
+            _unitOfWork = unitOfWork;
             _mapper = Mapper;
         }
 
@@ -29,11 +29,11 @@ namespace Company.PL.Controllers
             IEnumerable<Employee> employees;
             if (string.IsNullOrEmpty(searchInput))
             {
-                 employees = _employeeRepo.GetAll();
+                 employees = _unitOfWork.EmployeeRepo.GetAll();
             }
             else
             {
-                 employees = _employeeRepo.GetByName(searchInput);
+                 employees = _unitOfWork.EmployeeRepo.GetByName(searchInput);
             }
 
 
@@ -60,7 +60,7 @@ namespace Company.PL.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            var departments = _departmentRepo.GetAll();
+            var departments = _unitOfWork.DepartmentRepo.GetAll();
             ViewData["Departments"] = departments;
 
             return View();
@@ -92,7 +92,8 @@ namespace Company.PL.Controllers
 
                 var employee = _mapper.Map<Employee>(model);
 
-                var count = _employeeRepo.Add(employee);
+                _unitOfWork.EmployeeRepo.Add(employee);
+                var count = _unitOfWork.Save();
 
                 if (count > 0)
                 {
@@ -109,7 +110,7 @@ namespace Company.PL.Controllers
         {
             if (id is null)
                 return BadRequest("Invalid Id");
-            var model = _employeeRepo.Get(id.Value);
+            var model = _unitOfWork.EmployeeRepo.Get(id.Value);
 
             if (model is null)
                 return NotFound(new { StatusCode = 404, Message = $"Employee with Id {id} is Not Found" });
@@ -122,12 +123,12 @@ namespace Company.PL.Controllers
             if (id is null)
                 return BadRequest("Invalid Id");
 
-            var employee = _employeeRepo.Get(id.Value);
+            var employee = _unitOfWork.EmployeeRepo.Get(id.Value);
 
             if (employee is null)
                 return NotFound();
 
-            var depts = _departmentRepo.GetAll();
+            var depts = _unitOfWork.DepartmentRepo.GetAll();
             ViewData["Departments"] = depts;
 
             //var dto = new CreateDTOEmployee
@@ -176,7 +177,8 @@ namespace Company.PL.Controllers
 
                 var employee = _mapper.Map<Employee>(_employeeDTO);
                 employee.Id = id;   
-                int count = _employeeRepo.Update(employee);
+                _unitOfWork.EmployeeRepo.Update(employee);
+                var count = _unitOfWork.Save();
 
                 if (count > 0)
                 {
@@ -193,10 +195,11 @@ namespace Company.PL.Controllers
             if (id is null)
                 return BadRequest("Invalid Id");
 
-            var model = _employeeRepo.Get(id.Value);
+            var model = _unitOfWork.EmployeeRepo.Get(id.Value);
             if (model is null)
                 return NotFound(new { StatusCode = 404, Message = $"Employee with Id {id} is Not Found" });
-            int value = _employeeRepo.Delete(model);
+            _unitOfWork.EmployeeRepo.Delete(model);
+            var count = _unitOfWork.Save();
 
             return RedirectToAction(nameof(Index));
         }

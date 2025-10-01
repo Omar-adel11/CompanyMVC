@@ -10,14 +10,16 @@ namespace Company.PL.Controllers
 {
     public class DepartmentController : Controller
     {
-        private readonly IDepartmentRepo _departmentRepo;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         // ask CLR to create object from DepartmentRepo class
 
-        public DepartmentController(IDepartmentRepo departmentRepo, IMapper Mapper)
+        public DepartmentController(IUnitOfWork unitOfWork, IMapper Mapper)
         {
-            _departmentRepo =  departmentRepo;
+           
+            
+            _unitOfWork = unitOfWork;
             _mapper = Mapper;
         }
 
@@ -25,7 +27,7 @@ namespace Company.PL.Controllers
         public IActionResult Index()
         {
             
-            var departments = _departmentRepo.GetAll();
+            var departments = _unitOfWork.DepartmentRepo.GetAll();
 
             return View(departments);
         }
@@ -52,9 +54,10 @@ namespace Company.PL.Controllers
                 var department = _mapper.Map<Department>(model);
 
 
-                var count = _departmentRepo.Add(department);
+                _unitOfWork.DepartmentRepo.Add(department);
+                var count = _unitOfWork.Save();
 
-                if(count>0)
+                if (count>0)
                 {
                     return RedirectToAction(nameof(Index));
                 }
@@ -68,7 +71,7 @@ namespace Company.PL.Controllers
         {
             if (id is null)
                 return BadRequest("Invalid Id");
-            var model = _departmentRepo.Get(id.Value);
+            var model = _unitOfWork.DepartmentRepo.Get(id.Value);
 
             if (model is null)
                 return NotFound(new { StatusCode = 404, Message = $"Department with Id {id} is Not Found" });
@@ -80,7 +83,7 @@ namespace Company.PL.Controllers
         {
             if (id is null)
                 return BadRequest("Invalid Id");
-            var model = _departmentRepo.Get(id.Value);
+            var model = _unitOfWork.DepartmentRepo.Get(id.Value);
 
             if (model is null)
                 return NotFound(new { StatusCode = 404, Message = $"Department with Id {id} is Not Found" });
@@ -112,9 +115,10 @@ namespace Company.PL.Controllers
                 //};
                 var department = _mapper.Map<Department>(_departmentDTO);
                 department.Id = id;
-                int count = _departmentRepo.Update(department);
+                _unitOfWork.DepartmentRepo.Update(department);
+                var count = _unitOfWork.Save();
 
-                if(count > 0)
+                if (count > 0)
                 {
                     return RedirectToAction(nameof(Index));
                 }
@@ -128,10 +132,11 @@ namespace Company.PL.Controllers
             if(id is null)
                 return BadRequest("Invalid Id");
             
-            var model = _departmentRepo.Get(id.Value);
+            var model = _unitOfWork.DepartmentRepo.Get(id.Value);
             if(model is null)
                 return NotFound(new { StatusCode = 404, Message = $"Department with Id {id} is Not Found" });
-            int value =  _departmentRepo.Delete(model);
+            _unitOfWork.DepartmentRepo.Delete(model);
+            var value = _unitOfWork.Save();
 
             return RedirectToAction(nameof(Index));
         }

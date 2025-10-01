@@ -19,8 +19,8 @@ namespace Company.PL
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            builder.Services.AddScoped<IDepartmentRepo,DepartmentRepo>(); //allow dependency injection for DepartmentRepo
-            builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();//allow dependency injection for EmployeeRepo
+            //builder.Services.AddScoped<IDepartmentRepo,DepartmentRepo>(); //allow dependency injection for DepartmentRepo
+            //builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();//allow dependency injection for EmployeeRepo
 
             //builder.Services.AddTransient<DepartmentRepo>();
             //builder.Services.AddSingleton<DepartmentRepo>();
@@ -39,7 +39,7 @@ namespace Company.PL
             builder.Services.AddScoped<IServiceScope, ServiceScope>();     //Create object life time per request 
             builder.Services.AddTransient<IServiceTransient, ServiceTransient>();  //Create object life time per operation 
             builder.Services.AddSingleton<ISeriveSingleton, SeriveSingleton>();  //Create object life time per application 
-
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); //allow dependency injection for UnitOfWork
             //builder.Services.AddAutoMapper(typeof(EmployeeProfile)); //allow dependency injection for automapper
             builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
             builder.Services.AddAutoMapper(M => M.AddProfile(new DepartmentProfile()));
