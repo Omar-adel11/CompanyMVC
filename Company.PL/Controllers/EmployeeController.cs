@@ -25,16 +25,16 @@ namespace Company.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(string? searchInput)
+        public async Task<IActionResult> Index(string? searchInput)
         {
             IEnumerable<Employee> employees;
             if (string.IsNullOrEmpty(searchInput))
             {
-                 employees = _unitOfWork.EmployeeRepo.GetAll();
+                 employees = await _unitOfWork.EmployeeRepo.GetAllAsync();
             }
             else
             {
-                 employees = _unitOfWork.EmployeeRepo.GetByName(searchInput);
+                 employees = await _unitOfWork.EmployeeRepo.GetByNameAsync(searchInput);
             }
 
 
@@ -59,9 +59,9 @@ namespace Company.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var departments = _unitOfWork.DepartmentRepo.GetAll();
+            var departments = await _unitOfWork.DepartmentRepo.GetAllAsync();
             ViewData["Departments"] = departments;
 
             return View();
@@ -69,7 +69,7 @@ namespace Company.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(CreateDTOEmployee model)
+        public async Task<IActionResult> Create(CreateDTOEmployee model)
         {
             if (ModelState.IsValid) //server-side validation
             {
@@ -97,8 +97,8 @@ namespace Company.PL.Controllers
                 }
                 var employee = _mapper.Map<Employee>(model);
 
-                _unitOfWork.EmployeeRepo.Add(employee);
-                var count = _unitOfWork.Save();
+                await _unitOfWork.EmployeeRepo.AddAsync(employee);
+                var count = await _unitOfWork.SaveAsync();
 
                 if (count > 0)
                 {
@@ -111,11 +111,11 @@ namespace Company.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details(int? id, string ViewName = "Details")
+        public async Task<IActionResult> Details(int? id, string ViewName = "Details")
         {
             if (id is null)
                 return BadRequest("Invalid Id");
-            var model = _unitOfWork.EmployeeRepo.Get(id.Value);
+            var model = await _unitOfWork.EmployeeRepo.GetAsync(id.Value);
 
             if (model is null)
                 return NotFound(new { StatusCode = 404, Message = $"Employee with Id {id} is Not Found" });
@@ -123,17 +123,17 @@ namespace Company.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id is null)
                 return BadRequest("Invalid Id");
 
-            var employee = _unitOfWork.EmployeeRepo.Get(id.Value);
+            var employee = await _unitOfWork.EmployeeRepo.GetAsync(id.Value);
 
             if (employee is null)
                 return NotFound();
 
-            var depts = _unitOfWork.DepartmentRepo.GetAll();
+            var depts = await _unitOfWork.DepartmentRepo.GetAllAsync();
             ViewData["Departments"] = depts;
 
             //var dto = new CreateDTOEmployee
@@ -158,7 +158,7 @@ namespace Company.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken] // to prevent CSRF attacks OR ANY Request other than form submission (used with post)
-        public IActionResult Edit([FromRoute] int id, CreateDTOEmployee _employeeDTO)
+        public async  Task<IActionResult> Edit([FromRoute] int id, CreateDTOEmployee _employeeDTO)
         {
 
             if (ModelState.IsValid) //server-side validation
@@ -192,7 +192,7 @@ namespace Company.PL.Controllers
                 var employee = _mapper.Map<Employee>(_employeeDTO);
                 employee.Id = id;   
                 _unitOfWork.EmployeeRepo.Update(employee);
-                var count = _unitOfWork.Save();
+                var count = await _unitOfWork.SaveAsync();
 
                 if (count > 0)
                 {
@@ -204,12 +204,12 @@ namespace Company.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id is null)
                 return BadRequest("Invalid Id");
 
-            var model = _unitOfWork.EmployeeRepo.Get(id.Value);
+            var model = await _unitOfWork.EmployeeRepo.GetAsync(id.Value);
             if (model is null)
                 return NotFound(new { StatusCode = 404, Message = $"Employee with Id {id} is Not Found" });
             if (model.ImageName is not null)
@@ -218,7 +218,7 @@ namespace Company.PL.Controllers
             }
 
             _unitOfWork.EmployeeRepo.Delete(model);
-            var count = _unitOfWork.Save();
+            var count = await _unitOfWork.SaveAsync();
 
             return RedirectToAction(nameof(Index));
         }

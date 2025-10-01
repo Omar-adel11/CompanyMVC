@@ -11,7 +11,7 @@ namespace Company.BLL.Interfaces
 {
     public interface IEmployeeRepo : IGenericRepo<Employee>
     {
-        List<Employee> GetByName(string name);
+        Task<List<Employee>> GetByNameAsync(string name);
 
     }
 }

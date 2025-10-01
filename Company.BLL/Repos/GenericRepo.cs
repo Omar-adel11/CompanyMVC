@@ -18,28 +18,28 @@ namespace Company.BLL.Repos
             _context = context;
         }
 
-        public IEnumerable<T> GetAll()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
             if(typeof(T) == typeof(Employee))
             {
-                return (IEnumerable<T>) _context.Employees.Include("Department").ToList();
+                return (IEnumerable<T>) await _context.Employees.Include("Department").ToListAsync();
             }
-            var result = _context.Set<T>().ToList();
-            return result;
+            return await _context.Set<T>().ToListAsync();
+            
         }
 
-        public T? Get(int id)
+        public async Task<T?> GetAsync(int id)
         {
             if (typeof(T) == typeof(Employee))
             {
-                return _context.Employees.Include(E => E.Department).FirstOrDefault(e => e.Id == id) as T;
+                return await _context.Employees.Include(E => E.Department).FirstOrDefaultAsync(e => e.Id == id) as T;
             }
             return _context.Set<T>().Find(id);
         }
 
-        public void Add(T model)
+        public async Task AddAsync(T model)
         {
-            _context.Set<T>().Add(model);
+            await _context.Set<T>().AddAsync(model);
             
         }
 

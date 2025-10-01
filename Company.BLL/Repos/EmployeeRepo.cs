@@ -20,9 +20,9 @@ namespace Company.BLL.Repos
 
         public CompanyDbContext Context { get; }
 
-        public List<Employee> GetByName(string name)
+        public async Task<List<Employee>> GetByNameAsync(string name)
         {
-            return _context.Employees.Include(e=>e.Department).Where(e => e.Name.ToLower().Contains(name.ToLower())).ToList();
+            return await _context.Employees.Include(e=>e.Department).Where(e => e.Name.ToLower().Contains(name.ToLower())).ToListAsync();
         }
     }
 }
